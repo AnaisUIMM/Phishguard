@@ -133,7 +133,7 @@ phishing-detector/
 
 ## Moteur de détection
 
-Le fichier `detector.js` est organisé en **5 sections** clairement délimitées :
+Le fichier `detector.js` est organisé en **4 sections** clairement délimitées :
 
 ### Section 1 — Listes statiques
 
@@ -233,8 +233,6 @@ cd Phishguard
 python3 -m http.server 8080
 # → http://localhost:8080
 ```
-
-**Démo en ligne :** https://anaisuimm.github.io/Phishguard/
 
 ---
 
