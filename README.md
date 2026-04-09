@@ -323,12 +323,6 @@ node tests/tests.js
 
 ---
 
-## Licence
-
-MIT — Voir [LICENSE](LICENSE) pour les détails.
-
----
-
 ## Ressources
 
 - [PhishTank](https://www.phishtank.com/) — base de données de phishing
