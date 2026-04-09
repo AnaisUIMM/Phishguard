@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <title>PhishGuard — Tests</title>
+  <style>
+    body { font-family: 'Courier New', monospace; background: #0a0c0f; color: #e8edf2; padding: 2rem; }
+    h1 { color: #00ff87; margin-bottom: 1rem; }
+    #log { white-space: pre-wrap; font-size: .85rem; line-height: 1.7; }
+    .pass { color: #00c96a; }
+    .fail { color: #ff4757; }
+    .group { color: #ffd166; font-weight: bold; margin-top: 1rem; }
+    #summary { margin-top: 2rem; padding: 1rem; border: 1px solid #1e2530; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>🛡 PhishGuard — Suite de tests</h1>
+  <div id="log"></div>
+  <div id="summary"></div>
+
+  <script src="../detector.js"></script>
+  <script>
+    // Redirection console → DOM
+    const logEl = document.getElementById('log');
+    const origLog   = console.log.bind(console);
+    const origError = console.error.bind(console);
+    const origGroup = console.group.bind(console);
+    const origGroupEnd = console.groupEnd.bind(console);
+
+    let indent = 0;
+
+    console.group = (msg) => {
+      origGroup(msg);
+      logEl.innerHTML += `<span class="group">${msg}</span>\n`;
+      indent += 2;
+    };
+    console.groupEnd = () => {
+      origGroupEnd();
+      indent -= 2;
+    };
+    console.log = (...args) => {
+      origLog(...args);
+      const str = args.join(' ');
+      const cls = str.includes('✅') ? 'pass' : str.includes('❌') ? 'fail' : '';
+      logEl.innerHTML += `<span class="${cls}">${' '.repeat(indent)}${str}</span>\n`;
+    };
+    console.error = (...args) => {
+      origError(...args);
+      logEl.innerHTML += `<span class="fail">${' '.repeat(indent)}${args.join(' ')}</span>\n`;
+    };
+  </script>
+  <script src="tests.js"></script>
+  <script>
+    // Affichage du résumé
+    const sumEl = document.getElementById('summary');
+    const couleur = résultatsTests.filter(t=>t.statut==='FAIL').length === 0 ? '#00ff87' : '#ff4757';
+    sumEl.innerHTML = `<span style="color:${couleur};font-size:1.1rem;font-weight:bold">
+      ${résultatsTests.filter(t=>t.statut==='PASS').length} / ${résultatsTests.length} tests réussis
+    </span>`;
+  </script>
+</body>
+</html>

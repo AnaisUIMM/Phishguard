@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PhishGuard — Détecteur de Phishing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       EN-TÊTE
+  ============================================================ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🛡</span>
+        <span class="logo-text">PhishGuard</span>
+        <span class="logo-version">v1.0</span>
+      </div>
+      <p class="header-subtitle">
+        Analyseur statique de phishing — 100&nbsp;% local
+      </p>
+    </div>
+    <div class="grid-overlay" aria-hidden="true"></div>
+  </header>
+
+  <!-- ============================================================
+       CONTENU PRINCIPAL
+  ============================================================ -->
+  <main class="main">
+
+    <!-- ── Panneau d'entrée ── -->
+    <section class="input-panel" aria-label="Zone de saisie">
+
+      <!-- Onglets Email / URL -->
+      <div class="tabs" role="tablist" aria-label="Type d'analyse">
+        <button class="tab active" data-tab="email" role="tab" aria-selected="true" aria-controls="tab-email">
+          📧 Email / Texte
+        </button>
+        <button class="tab" data-tab="url" role="tab" aria-selected="false" aria-controls="tab-url">
+          🔗 URL
+        </button>
+      </div>
+
+      <!-- Onglet Email -->
+      <div class="tab-content active" id="tab-email" role="tabpanel">
+        <label class="input-label" for="input-email">
+          Collez ici le contenu de l'email suspect&nbsp;:
+        </label>
+        <textarea
+          id="input-email"
+          class="textarea"
+          placeholder="Collez l'intégralité du texte de l'email (en-têtes, corps du message, liens)…"
+          rows="10"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <!-- Onglet URL -->
+      <div class="tab-content" id="tab-url" role="tabpanel" hidden>
+        <label class="input-label" for="input-url">
+          Entrez une URL à analyser&nbsp;:
+        </label>
+        <input
+          type="text"
+          id="input-url"
+          class="url-input"
+          placeholder="https://exemple-suspect.com/login?redirect=paypal…"
+          spellcheck="false"
+          autocomplete="off"
+        />
+        <p class="url-hint">
+          ⚠ N'ouvrez jamais l'URL dans votre navigateur avant de l'avoir analysée.
+        </p>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="action-bar">
+        <button id="btn-analyze" class="btn-analyze">
+          <span class="btn-text">Analyser</span>
+          <span class="btn-arrow">→</span>
+        </button>
+        <button id="btn-clear" class="btn-clear">Effacer</button>
+      </div>
+
+    </section>
+
+    <!-- ── Panneau des résultats ── -->
+    <section class="results-panel" id="results" aria-label="Résultats de l'analyse" aria-live="polite">
+
+      <!-- État initial -->
+      <div class="results-placeholder" id="results-placeholder">
+        <div class="placeholder-icon">🔍</div>
+        <p>Entrez un email ou une URL puis cliquez sur <strong>Analyser</strong>.</p>
+      </div>
+
+      <!-- Bloc score global -->
+      <div class="score-block hidden" id="score-block">
+        <div class="score-header">
+
+          <!-- Cercle de score -->
+          <div class="score-circle" id="score-circle" aria-label="Score de risque">
+            <svg class="score-svg" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="score-track" cx="60" cy="60" r="50"/>
+              <circle class="score-arc"  cx="60" cy="60" r="50" id="score-arc"/>
+            </svg>
+            <div class="score-text">
+              <span class="score-number" id="score-number">0</span>
+              <span class="score-unit">/ 100</span>
+            </div>
+          </div>
+
+          <!-- Verdict textuel -->
+          <div class="score-verdict">
+            <span class="verdict-emoji" id="verdict-emoji" aria-hidden="true"></span>
+            <span class="verdict-text" id="verdict-text"></span>
+            <span class="verdict-sub"  id="verdict-sub"></span>
+          </div>
+
+        </div>
+
+        <!-- Barre de risque -->
+        <div class="risk-bar-container" aria-hidden="true">
+          <div class="risk-bar-track">
+            <div class="risk-bar-fill" id="risk-bar-fill"></div>
+            <div class="risk-bar-cursor" id="risk-bar-cursor"></div>
+          </div>
+          <div class="risk-bar-labels">
+            <span>Sûr</span>
+            <span>Suspect</span>
+            <span>Dangereux</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bloc indicateurs détectés -->
+      <div class="indicators-block hidden" id="indicators-block">
+        <h3 class="block-title">Indicateurs détectés</h3>
+        <ul class="indicators-list" id="indicators-list"></ul>
+      </div>
+
+      <!-- Bloc analyse par catégorie -->
+      <div class="categories-block hidden" id="categories-block">
+        <h3 class="block-title">Analyse par catégorie</h3>
+        <div class="categories-grid" id="categories-grid"></div>
+      </div>
+
+      <!-- Bloc recommandations -->
+      <div class="reco-block hidden" id="reco-block">
+        <h3 class="block-title">Recommandations</h3>
+        <ul class="reco-list" id="reco-list"></ul>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       PIED DE PAGE
+  ============================================================ -->
+  <footer class="footer">
+    <p>
+      PhishGuard · Analyse 100&nbsp;% locale · Aucune donnée transmise ·
+      <a href="https://github.com/votre-username/phishguard" target="_blank" rel="noopener">
+        GitHub ↗
+      </a>
+    </p>
+  </footer>
+
+  <!-- Scripts (ordre important : detector avant ui) -->
+  <script src="detector.js"></script>
+  <script src="ui.js"></script>
+
+</body>
+</html>
